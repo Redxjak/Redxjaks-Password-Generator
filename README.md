@@ -2,6 +2,12 @@
 
 A simple Python/Tkinter password generator that can save generated password records to an Excel workbook.
 
+## Download
+
+Download the Windows executable here:
+
+[Download Redxjak's Password Generator](https://github.com/Redxjak/Redxjaks-Password-Generator/releases/download/v1.0.0/Red.s.PG.exe)
+
 ## Features
 
 - Generates random passwords with configurable minimum and maximum length
