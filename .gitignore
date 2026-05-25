@@ -1,0 +1,11 @@
+﻿.venv/
+.idea/
+build/
+dist/
+__pycache__/
+*.pyc
+Generated Passwords/
+*.xlsx
+*.xls
+*.csv
+*.txt
