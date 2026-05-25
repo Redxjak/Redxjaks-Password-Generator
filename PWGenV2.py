@@ -220,6 +220,32 @@ def copy_text_to_clipboard(text):
     clipboard_window.destroy()
 
 
+def show_error(title, message):
+    try:
+        if "window" in globals() and window.winfo_exists():
+            messagebox.showerror(title, message, parent=window)
+            return
+    except tk.TclError:
+        pass
+
+    print(f"{title}: {message}", file=sys.stderr)
+
+
+def show_info(title, message):
+    try:
+        if "window" in globals() and window.winfo_exists():
+            messagebox.showinfo(title, message, parent=window)
+            return
+    except tk.TclError:
+        pass
+
+    print(f"{title}: {message}")
+
+
+def is_number_or_blank(value):
+    return value == "" or value.isdigit()
+
+
 def choose_file_location():
     export_format = export_format_var.get()
     default_extension = EXPORT_EXTENSIONS[export_format]
@@ -254,25 +280,33 @@ def create_password():
         min_symbols = int(min_symbols_entry.get() or 0)
         count = int(count_entry.get() or 1)
     except ValueError:
-        messagebox.showerror(
+        show_error(
             "Error",
             "Length, count, and minimum requirements must be numbers."
         )
         return
 
+    if min_length < 1 or max_length < 1:
+        show_error("Error", "Password length must be at least 1.")
+        return
+
+    if min_uppercase < 0 or min_lowercase < 0 or min_symbols < 0:
+        show_error("Error", "Minimum requirements cannot be negative.")
+        return
+
     if min_length > max_length:
-        messagebox.showerror(
+        show_error(
             "Error",
             "Minimum length cannot be greater than maximum length."
         )
         return
 
     if count < 1:
-        messagebox.showerror("Error", "Number of passwords must be at least 1.")
+        show_error("Error", "Number of passwords must be at least 1.")
         return
 
     if site_name == "" or username == "" or save_location == "":
-        messagebox.showerror("Error", "Please fill out all fields.")
+        show_error("Error", "Please fill out all fields.")
         return
 
     try:
@@ -288,7 +322,7 @@ def create_password():
             excluded_characters
         )
     except ValueError as error:
-        messagebox.showerror("Error", str(error))
+        show_error("Error", str(error))
         return
 
     passwords = "\n".join(record["Password"] for record in records)
@@ -298,26 +332,26 @@ def create_password():
     try:
         save_records(save_location, records, export_format)
     except PermissionError:
-        messagebox.showerror(
+        show_error(
             "File is open",
             "Please close the file before generating a password."
         )
         return
 
-    messagebox.showinfo("Password Generated", "Password Generated Successfully!")
+    show_info("Password Generated", "Password Generated Successfully!")
 
 
 def copy_generated_passwords():
     passwords = password_output.get("1.0", tk.END).strip()
 
     if passwords == "":
-        messagebox.showerror("Error", "There are no generated passwords to copy.")
+        show_error("Error", "There are no generated passwords to copy.")
         return
 
     window.clipboard_clear()
     window.clipboard_append(passwords)
     window.update()
-    messagebox.showinfo("Copied", "Generated password text copied to the clipboard.")
+    show_info("Copied", "Generated password text copied to the clipboard.")
 
 
 def run_cli():
@@ -343,20 +377,29 @@ def run_cli():
     if args.min_length > args.max_length:
         parser.error("Minimum length cannot be greater than maximum length.")
 
+    if args.min_length < 1 or args.max_length < 1:
+        parser.error("Password length must be at least 1.")
+
+    if args.min_uppercase < 0 or args.min_lowercase < 0 or args.min_symbols < 0:
+        parser.error("Minimum requirements cannot be negative.")
+
     if args.count < 1:
         parser.error("Count must be at least 1.")
 
-    records = generate_password_records(
-        args.site,
-        args.username,
-        args.count,
-        args.min_length,
-        args.max_length,
-        args.min_uppercase,
-        args.min_lowercase,
-        args.min_symbols,
-        args.exclude
-    )
+    try:
+        records = generate_password_records(
+            args.site,
+            args.username,
+            args.count,
+            args.min_length,
+            args.max_length,
+            args.min_uppercase,
+            args.min_lowercase,
+            args.min_symbols,
+            args.exclude
+        )
+    except ValueError as error:
+        parser.error(str(error))
     passwords = "\n".join(record["Password"] for record in records)
 
     print(passwords)
@@ -387,6 +430,7 @@ def run_gui():
     window = tk.Tk()
     window.title("Redxjak's Password Generator")
     window.geometry("430x720")
+    number_validator = (window.register(is_number_or_blank), "%P")
 
     tk.Label(window, text="Redxjak's Password Generator", font=("Arial", 16)).pack(pady=10)
 
@@ -399,23 +443,23 @@ def run_gui():
     username_entry.pack()
 
     tk.Label(window, text="Minimum Password Length: (Default 10)").pack()
-    min_length_entry = tk.Entry(window, width=45)
+    min_length_entry = tk.Entry(window, width=45, validate="key", validatecommand=number_validator)
     min_length_entry.pack()
 
     tk.Label(window, text="Maximum Password Length: (Default 20)").pack()
-    max_length_entry = tk.Entry(window, width=45)
+    max_length_entry = tk.Entry(window, width=45, validate="key", validatecommand=number_validator)
     max_length_entry.pack()
 
     tk.Label(window, text="Minimum Uppercase Letters:").pack()
-    min_uppercase_entry = tk.Entry(window, width=45)
+    min_uppercase_entry = tk.Entry(window, width=45, validate="key", validatecommand=number_validator)
     min_uppercase_entry.pack()
 
     tk.Label(window, text="Minimum Lowercase Letters:").pack()
-    min_lowercase_entry = tk.Entry(window, width=45)
+    min_lowercase_entry = tk.Entry(window, width=45, validate="key", validatecommand=number_validator)
     min_lowercase_entry.pack()
 
     tk.Label(window, text="Minimum Special Characters:").pack()
-    min_symbols_entry = tk.Entry(window, width=45)
+    min_symbols_entry = tk.Entry(window, width=45, validate="key", validatecommand=number_validator)
     min_symbols_entry.pack()
 
     tk.Label(window, text="Characters to Exclude:").pack()
@@ -424,7 +468,7 @@ def run_gui():
     excluded_characters_entry.pack()
 
     tk.Label(window, text="Number of Passwords: (Default 1)").pack()
-    count_entry = tk.Entry(window, width=45)
+    count_entry = tk.Entry(window, width=45, validate="key", validatecommand=number_validator)
     count_entry.pack()
 
     tk.Label(window, text="Export Format:").pack()

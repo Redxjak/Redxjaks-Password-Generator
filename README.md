@@ -6,7 +6,7 @@ A Python/Tkinter password generator that can save generated password records to 
 
 Download the Windows executable here:
 
-[Download Redxjak's Password Generator](https://github.com/Redxjak/Redxjaks-Password-Generator/releases/download/v1.1.0/PasswordGenerator.exe)
+[Download Redxjak's Password Generator](https://github.com/Redxjak/Redxjaks-Password-Generator/releases/download/v1.1.1/PasswordGenerator.exe)
 
 ## Features
 
