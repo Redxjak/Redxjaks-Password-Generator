@@ -17,6 +17,7 @@ from tkinter import filedialog, messagebox
 from openpyxl import Workbook, load_workbook
 
 
+VERSION = "1.1.2"
 SYMBOLS = "!@#$%^&*()"
 EXPORT_EXTENSIONS = {
     "excel": ".xlsx",
@@ -356,6 +357,12 @@ def copy_generated_passwords():
 
 def run_cli():
     parser = argparse.ArgumentParser(description="Redxjak's Password Generator")
+    parser.add_argument(
+        "-v",
+        "--version",
+        action="version",
+        version=f"Redxjak's Password Generator version {VERSION}"
+    )
     parser.add_argument("--site", default="Command Line", help="Website or application name.")
     parser.add_argument("--username", default="CLI User", help="Username for the generated record.")
     parser.add_argument("--min-length", type=int, default=10, help="Minimum password length.")
@@ -521,7 +528,17 @@ def main():
     if len(sys.argv) > 1:
         run_cli()
     else:
-        run_gui()
+        try:
+            run_gui()
+        except tk.TclError as error:
+            print(
+                f"Redxjak's Password Generator version {VERSION}\n"
+                "This program should be run with a GUI.\n"
+                "For command-line usage, run with --help to see available options.",
+                file=sys.stderr
+            )
+            print(f"GUI error: {error}", file=sys.stderr)
+            sys.exit(1)
 
 
 if __name__ == "__main__":

@@ -6,7 +6,7 @@ A Python/Tkinter password generator that can save generated password records to 
 
 Download the Windows executable here:
 
-[Download Redxjak's Password Generator](https://github.com/Redxjak/Redxjaks-Password-Generator/releases/download/v1.1.1/PasswordGenerator.exe)
+[Download Redxjak's Password Generator](https://github.com/Redxjak/Redxjaks-Password-Generator/releases/download/v1.1.2/PasswordGenerator.exe)
 
 ## Features
 
@@ -37,6 +37,12 @@ Run the app with:
 python PWGenV2.py
 ```
 
+Show the version:
+
+```powershell
+python PWGenV2.py -v
+```
+
 Run from the command line with options:
 
 ```powershell
@@ -48,3 +54,5 @@ Copy generated passwords from the command line:
 ```powershell
 python PWGenV2.py --count 3 --copy
 ```
+
+If the app is started without command-line options on a computer that cannot open a GUI, it prints a message explaining that the program should be run with a GUI and suggests `--help` for command-line usage.
