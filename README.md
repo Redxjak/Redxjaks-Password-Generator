@@ -1,6 +1,10 @@
-﻿# Redxjak's Password Generator
+# Redxjak's Password Generator
 
 A Python/Tkinter password generator that can save generated password records to Excel, CSV, text, JSON, or Markdown.
+
+## Community
+
+Join the Discord server for project updates and feedback: [Redxjak Discord](https://discord.gg/9C4npSfNQd)
 
 ## Download
 
